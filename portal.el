@@ -59,4 +59,21 @@
     (setq portal-sessions (remove p portal-sessions))
     (setq portal-current (car portal-sessions))))
 
+(cl-defmethod portal-datafy ((object ert-test-failed))
+  (list :messages (ert-test-result-messages object)
+        :duration (ert-test-result-duration object)
+        :condition (ert-test-result-with-condition-condition object)))
+
+(cl-defmethod portal-datafy ((object ert-test-passed))
+  (list :messages (ert-test-result-messages object)))
+
+(defun portal-run-ert-test-at-point ()
+  (interactive)
+  (eval-defun nil)
+  (when-let ((test-sym (ert-test-at-point)))
+    (let ((test (ert-get-test test-sym)))
+      (let ((result (ert-run-test test)))
+        (portal-tap result)
+        (message (prin1-to-string (type-of result)))))))
+
 (provide 'portal)
