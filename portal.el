@@ -6,7 +6,7 @@
 
 (defvar portal-sessions nil)
 
-(defvar portal-current)
+(defvar portal-current nil)
 
 (defun portal--the (portal)
   (or portal portal-current (portal-open)))
@@ -39,18 +39,23 @@
         (portal-datafy (cdr object))))
 
 (defun portal--send-command (portal command)
-  (process-send-string portal (concat (parseedn-print-str (portal-datafy command)) "\n")))
+  (process-send-string portal (parseedn-print-str (portal-datafy command)))
+  (process-send-string portal "\n"))
 
-(defun portal-tap (val &optional portal)
-  (portal--send-command (portal--the portal) `(:command :tap :value ,val))
+(defun portal-tap (val &optional meta portal)
+  (portal--send-command (portal--the portal) `(:command :tap :value ,val :meta ,meta))
   val)
 
 (defun portal-clear (&optional portal)
   (interactive)
   (portal--send-command (portal--the portal) `(:command :clear)))
 
-(defun portal-reset (val &optional portal)
-  (portal--send-command (portal--the portal) `(:command :reset :value ,val)))
+(defun portal-docs (&optional portal)
+  (interactive)
+  (portal--send-command (portal--the portal) `(:command :docs)))
+
+(defun portal-reset (val &optional meta portal)
+  (portal--send-command (portal--the portal) `(:command :reset :value ,val :meta ,meta)))
 
 (defun portal-close (&optional portal)
   (interactive)

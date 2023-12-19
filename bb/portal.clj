@@ -6,12 +6,16 @@
 (defmulti process-command :command)
 
 (defmethod process-command :reset
-  [{:keys [value]}]
-  (reset! portal value))
+  [{:keys [meta value]}]
+  (reset! portal (with-meta value meta)))
 
 (defmethod process-command :tap
-  [{:keys [value]}]
-  (p/submit value))
+  [{:keys [meta value]}]
+  (p/submit (with-meta value meta)))
+
+(defmethod process-command :docs
+  [_]
+  (p/docs))
 
 (defmethod process-command :clear
   [_]
